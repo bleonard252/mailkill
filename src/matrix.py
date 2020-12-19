@@ -4,20 +4,31 @@ The Matrix module for Mailkill.
 from flask.globals import request
 from flask.json import jsonify
 from flask.wrappers import Response
+from jinja2.utils import urlize
 import nio
 import flask
+from tinydb import TinyDB, Query
+import re
+from urllib.parse import unquote
 
 app = flask.app.Flask(__name__)
+malformedid = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_NOT_FOUND",'
+    '"error": "The ID given is not valid for Mailkill"}', 404)
+unauthorized = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_UNAUTHORIZED",'
+    '"error": "Mailkill requires a correct Homeserver token"}', 401)
+forbidden = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_FORBIDDEN",'
+    '"error": "Mailkill requires a correct Homeserver token"}', 403)
+notfound = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_NOT_FOUND",'
+    '"error": "The entity does not exist, probably because Mailkill hasn\'t recieved '
+    'a message from the associated address."}', 404)
 
-@app.route("/transactions/<transaction>", methods=["PUT"])
+@app.route("/_matrix/app/v1/transactions/<transaction>", methods=["PUT"])
 def on_receive_events(transaction):
     # Check token
     if request.authorization == None:
-        flask.abort(Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_UNAUTHORIZED",'
-        '"error": "Mailkill requires a correct Homeserver token"}', 401))
+        flask.abort(unauthorized)
     elif request.authorization != globals()["CONFIG"]["service_token"]:
-        flask.abort(Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_FORBIDDEN",'
-        '"error": "Mailkill requires a correct Homeserver token"}', 403))
+        flask.abort(forbidden)
     # Process events
     events = request.get_json()["events"]
     for event in events:
@@ -28,3 +39,18 @@ def on_receive_events(transaction):
         pass
     return jsonify({})
 
+@app.route("/_matrix/app/v1/users/<userId>", methods=["GET"])
+def on_query_user(userid: str):
+    # Check token
+    if request.authorization == None:
+        flask.abort(unauthorized)
+    elif request.authorization != globals()["CONFIG"]["service_token"]:
+        flask.abort(forbidden)
+    # Check if user ID is valid
+    elif re.match(r'\@mailkill_[a-z0-9.-_]+\:.+', unquote(userid)) == None:
+        flask.abort(malformedid)
+    # Check if user exists
+    elif not globals()["DATABASE"].table("matrix_users").contains(Query().id == userid):
+        flask.abort(notfound)
+    #globals()["DATABASE"].table("matrix_users").get(Query().id == userid)
+    return jsonify({})

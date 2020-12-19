@@ -2,6 +2,7 @@ import argparse
 import nio
 import os, sys, json
 import src.matrix
+import tinydb
 
 # ================
 # == PARSE ARGS ==
@@ -36,11 +37,13 @@ else:
     os.error("FATAL: No config exists!")
     exit(1)
 CONFIG = json.loads(_CONFIG)
+globals()["CONFIG"] = CONFIG
 
 # =========================
-# == INITIALIZE SERVICES ==
+# == INITIALIZE DATABASE ==
 # =========================
-nio.AsyncClient(CONFIG["homeserver"])
+DB = tinydb.TinyDB(CONFIG["database"])
+globals()["DATABASE"] = DB
 
 # =================
 # == USE MODULES ==
@@ -48,6 +51,10 @@ nio.AsyncClient(CONFIG["homeserver"])
 if args.google_voice:
     print("Using Google Voice")
 
-globals()["CONFIG"] = CONFIG
+
+# =========================
+# == INITIALIZE SERVICES ==
+# =========================
 if __name__ == "__main__":
+    nio.AsyncClient(CONFIG["homeserver"])
     src.matrix.app.run(port=CONFIG["port"])

@@ -3,3 +3,4 @@ mail-parser==3.14.0
 matrix-nio==0.15.2
 requests==2.25.1
 tinydb==4.3.0
+yagmail==0.14.245

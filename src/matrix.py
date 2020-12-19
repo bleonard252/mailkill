@@ -17,7 +17,7 @@ from urllib.parse import unquote
 # ==================================
 
 app = flask.app.Flask(__name__)
-malformedid = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_NOT_FOUND",'
+malformedid = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_MALFORMED",'
     '"error": "The ID given is not valid for Mailkill"}', 404)
 unauthorized = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_UNAUTHORIZED",'
     '"error": "Mailkill requires a correct Homeserver token"}', 401)

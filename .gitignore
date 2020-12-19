@@ -1,2 +1,13 @@
 # Python virtual environment, with either venv or virtualenv
 .venv
+
+# This config should not be used,
+# copy config.json.example instead
+config.json
+# registration.yaml does not go here,
+# it should be called mailkill.yaml or something
+# and be placed alongside homeserver.yaml,
+# as per the appservice docs/spec/whatever
+
+# Python
+__pycache__

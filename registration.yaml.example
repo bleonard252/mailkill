@@ -1,0 +1,15 @@
+id: "Mailkill"
+url: "http://127.0.0.1:11024" #change accordingly
+as_token: "" # Set this
+hs_token: "" # Set this to a custom token;
+  # match it with "service_token" in config.json
+# Keep the below values the same
+sender_localpart: "mailkillbot" # Will result in @_irc_bot:example.org
+namespaces:
+  users:
+    - exclusive: true
+      regex: "@mailkill_.*"
+  aliases:
+    - exclusive: true
+      regex: "#mailkill_.*"
+  rooms: []

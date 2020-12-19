@@ -1,8 +1,13 @@
 import argparse
 import nio
-import os, sys, json
+import os, sys, json, asyncio, signal
+from multiprocessing import Process
 import src.matrix
 import tinydb
+import src.email.email as email
+from src import config
+
+globals()["CONTINUE"] = True
 
 # ================
 # == PARSE ARGS ==
@@ -22,29 +27,15 @@ globals()["ARGS"] = args
 # =================
 # == LOAD CONFIG ==
 # =================
+config.init(args)
+CONFIG = config.CONFIG
 
-_CONFIG = None
-if args.config != "":
-    _CONFIG = open(args.config).read()
-elif os.environ.__contains__("MAILKILL_CONFIG"):
-    _CONFIG = open(os.environ["MAILKILL_CONFIG"]).read()
-elif os.path.exists("~/.config/mailkill.json"):
-    _CONFIG = open("~/.config/mailkill.json").read()
-elif os.path.exists("/etc/mailkill.json"):
-    _CONFIG = open("/etc/mailkill.json").read()
-elif os.path.exists("./mailkill.json"):
-    _CONFIG = open("./mailkill.json").read()
-else:
-    os.error("FATAL: No config exists!")
-    exit(1)
-CONFIG = json.loads(_CONFIG)
-globals()["CONFIG"] = CONFIG
+#globals()["CONFIG"] = CONFIG
 
 # =========================
 # == INITIALIZE DATABASE ==
 # =========================
-DB = tinydb.TinyDB(CONFIG["database"])
-globals()["DATABASE"] = DB
+DB = config.DATABASE
 
 # =================
 # == USE MODULES ==
@@ -52,11 +43,22 @@ globals()["DATABASE"] = DB
 if args.google_voice:
     print("Using Google Voice")
 
-
 # =========================
 # == INITIALIZE SERVICES ==
 # =========================
+TASK = None; SERVER = None
 if __name__ == "__main__":
     #mxclient = nio.AsyncClient(CONFIG["homeserver"])
     #if DB.table("client").contains(tinydb.Query().access_token):
-    src.matrix.app.run(port=CONFIG["port"] | 46666 )
+    #TASK = asyncio.create_task(email.listen())
+    #TASK = Process(target=email.listen)
+    SERVER = Process(target=src.matrix.app.run,
+        kwargs={"port": CONFIG["port"] | 46666, "debug": False})
+    SERVER.start()
+    print(f"Web server started on port {CONFIG['port'] | 46666}")
+    email.listen()
+def _sigterm():
+    print("Terminating Mailkill gracefully...")
+    globals()["CONTINUE"] = False
+    SERVER.terminate()
+signal.signal(signal.SIGTERM, _sigterm)

@@ -4,7 +4,7 @@ as_token: "" # Set this to a unique token;
   # match it with "access_token" in config.json
 hs_token: "" # Set this to a unique token;
   # match it with "service_token" in config.json
-# Keep the below values the same
+# Keep the below values unchanged
 sender_localpart: "mailkillbot" # Will result in @_irc_bot:example.org
 namespaces:
   users:

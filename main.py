@@ -17,6 +17,7 @@ args__parser.add_argument('-c, --config', type=str, default="", metavar="FILE",
     MAILKILL_CONFIG environment variable.""")
 
 args = args__parser.parse_args()
+globals()["ARGS"] = args
 
 # =================
 # == LOAD CONFIG ==
@@ -56,5 +57,6 @@ if args.google_voice:
 # == INITIALIZE SERVICES ==
 # =========================
 if __name__ == "__main__":
-    nio.AsyncClient(CONFIG["homeserver"])
-    src.matrix.app.run(port=CONFIG["port"])
+    #mxclient = nio.AsyncClient(CONFIG["homeserver"])
+    #if DB.table("client").contains(tinydb.Query().access_token):
+    src.matrix.app.run(port=CONFIG["port"] | 46666 )

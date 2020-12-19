@@ -7,6 +7,7 @@ import asyncio
 import src.config
 import datetime
 from signal import signal, SIGTERM
+import src.modules.google_voice as GoogleVoice
 
 CONTINUE: bool = True
 
@@ -42,20 +43,12 @@ def listen():
         def markAsRead(mailParser: MailParser):
             mail_id = mail_ids[inbox.index(mailParser)]
             client.store(mail_id,"+FLAGS", '\Seen')
-        if datetime.datetime.fromtimestamp(prev_email) != latest_email.date: # new message!
-            # filter down to new emails
-            #assert inbox[-1] != prev_email
-            unread = []
-            for email in inbox.__reversed__():
-                if email.date == datetime.datetime.fromtimestamp(prev_email):
-                    break
-                else:
-                    unread += email
-            for email in unread:
-                print("Got an email!")
-                print(email)
-                # TODO: do something with the email
-                MailParser().headers["Mes"]
+        for email in inbox:
+            # print("Got an email!")
+            # print(email)
+            # TODO: do something with the email
+            if email.from_[0][1].endswith("@txt.voice.google.com"):
+                GoogleVoice.on_email(email, markAsRead=markAsRead)
     while CONTINUE:
         loop = asyncio.get_event_loop()
         loop.run_until_complete(inner())

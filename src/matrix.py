@@ -1,6 +1,9 @@
 """
 The Matrix module for Mailkill.
 """
+import requests
+from tinydb.queries import where
+from src import config
 from flask.globals import request
 from flask.json import jsonify
 from flask.wrappers import Response
@@ -10,6 +13,7 @@ import flask
 from tinydb import TinyDB, Query
 import re
 from urllib.parse import unquote
+import yagmail
 #import matrix_src as mx
 
 # ==================================
@@ -32,11 +36,15 @@ notfound = Response('"errcode": "IO.GITHUB.BLEONARD252.MAILKILL_NOT_FOUND",'
 # ===================
 
 @app.route("/_matrix/app/v1/transactions/<transaction>", methods=["PUT"])
+@app.route("/transactions/<transaction>", methods=["PUT"])
 def on_receive_events(transaction):
+    DB = config.DATABASE
+    CONFIG = config.CONFIG
+    print(request.args)
     # Check token
-    if request.authorization == None:
+    if request.authorization == None and request.args.get("access_token", type=str) == None:
         flask.abort(unauthorized)
-    elif request.authorization != globals()["CONFIG"]["service_token"]:
+    elif request.authorization != CONFIG["service_token"] and request.args.get("access_token", type=str) != CONFIG["service_token"]:
         flask.abort(forbidden)
     # Process events
     events = request.get_json()["events"]
@@ -47,6 +55,17 @@ def on_receive_events(transaction):
         # print("Content: %s" % event["content"])
         # Here, you will interpret the ID to determine which module to
         # send the message to, and if the module is active.
+        emailaddr = DB.table("rooms").get(where("id") == event["room_id"]).get("email")
+        # client = smtplib.IMAP4_SSL(CONFIG["imap_server"])
+        # client.login(CONFIG["imap_username"], CONFIG["imap_password"])
+        # client.
+        if event["user_id"] == CONFIG["end_user"]:
+            #yagmail.register(CONFIG["imap_username"], CONFIG["imap_password"])
+            client = yagmail.SMTP(CONFIG["imap_username"], CONFIG["imap_password"], CONFIG["smtp_server"])
+            client.login()
+            if event["type"] == "m.room.message" and event["content"].__contains__("msgtype") and event["content"]["msgtype"] == "m.text":
+                client.send(to=emailaddr, contents=event["content"]["body"])
+                print("sent email")
         pass
     return jsonify({})
 

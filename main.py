@@ -53,7 +53,7 @@ if __name__ == "__main__":
     #TASK = asyncio.create_task(email.listen())
     #TASK = Process(target=email.listen)
     SERVER = Process(target=src.matrix.app.run,
-        kwargs={"port": CONFIG["port"], "debug": False})
+        kwargs={"host": "0.0.0.0", "port": CONFIG["port"], "debug": False})
     SERVER.start()
     print(f"Web server started on port {CONFIG['port']}")
     email.listen()

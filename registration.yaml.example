@@ -1,5 +1,5 @@
 id: "Mailkill"
-url: "http://127.0.0.1:11024" #change accordingly
+url: "http://127.0.0.1:48986" #change accordingly
 as_token: "" # Set this to a unique token;
   # match it with "access_token" in config.json
 hs_token: "" # Set this to a unique token;

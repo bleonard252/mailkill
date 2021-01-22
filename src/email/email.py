@@ -34,7 +34,7 @@ def listen():
             inbox.append(mailparser.parse_from_bytes(data[0][1]))
         latest_email = inbox[-1]
         if DB.table("client").get(where("latest_message_date").exists()) == None:
-            datetime.date().isoformat
+            #datetime.date().isoformat()
             DB.table("client").insert({"latest_message_date": latest_email.date.timestamp()})
         prev_email = DB.table("client").get(where("latest_message_date").exists())["latest_message_date"]
         DB.table("client").upsert({

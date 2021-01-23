@@ -1,5 +1,7 @@
 import json
 import requests
+from datetime import datetime
+from requests.api import request
 from tinydb.queries import Query, where
 from src.matrix_src.asuser import sendFromUserToRoom
 from src.matrix_src import requesthelper
@@ -45,6 +47,23 @@ From: {addrregex.group('othernum')}\n
         joinresp.raise_for_status()
     roomid = config.DATABASE.table("rooms").get(where("email") == fromAddr).get("id")
     # Send to Matrix
-    sendFromUserToRoom(f"@{email_to_localpart(fromAddr)}:{config.CONFIG['homeserver']}", roomid, usertoken, content={"body": smscontent, "msgtype": "m.text"})
+    # if len(email.text_not_managed) > 0:
+    #     for attachment in email.text_not_managed:
+    #         if attachment.startswith("\xff\xd8\xff\xe0\x10JFIF"):
+    #             fn = datetime.now().timestamp().__trunc__()
+    #             open(f"/tmp/{fn}.jpeg", "wb+").write(attachment)
+    #             with open(f"/tmp/{fn}.jpeg", "rb") as fobj:
+    #                 attresp = requests.post(f"http://{config.CONFIG['homeserver_url']}/_matrix/media/r0/upload",
+    #                     data=attachment, headers={"Content-Type": "image/jpeg"},
+    #                     timeout=10, auth=requesthelper.BearerAuth(usertoken))
+    #                 attresp.raise_for_status()
+    #             resp = requests.put(f"http://{config.CONFIG['homeserver']}/_matrix/client/r0/rooms/{roomid}/send/m.room.message/99{datetime.now().timestamp().__trunc__()}88",
+    #                 json={"url":attresp.json()["content_uri"], "body": "image.jpeg", "msgtype": "m.image"},
+    #                 timeout=10, auth=requesthelper.BearerAuth(usertoken)
+    #             )
+    #             resp.raise_for_status()
+    # TODO: re-add attachments. https://github.com/SpamScope/mail-parser/issues/70 is required for this to work
+    if smscontent != "MMS Received" and smscontent != "":
+        sendFromUserToRoom(f"@{email_to_localpart(fromAddr)}:{config.CONFIG['homeserver']}", roomid, usertoken, content={"body": smscontent, "msgtype": "m.text"})
     # Finally, mark as read (to prevent parsing it again)
     markAsRead(email)

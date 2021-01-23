@@ -77,7 +77,7 @@ def on_receive_events(transaction):
                             timeout=10, auth=requesthelper.BearerAuth(usertonick.get("token"))
                         )
                         moduleIdentifier = " (Mailkill)"
-                        if usertonick.get("email").endswith("@txt.voice.google.com") and globals()["ARGS"].google_voice == True:
+                        if usertonick.get("email").endswith("@txt.voice.google.com") and config.ARGS.google_voice == True:
                             moduleIdentifier = " (SMS)"
                         nameresp = requests.put(f"http://{CONFIG['homeserver_url']}/_matrix/client/r0/rooms/{event['room_id']}/state/m.room.name", 
                             json.dumps({"name": newNick + moduleIdentifier}),
@@ -98,6 +98,12 @@ def on_receive_events(transaction):
                         )
                         avresp.raise_for_status()
                         roomresp.raise_for_status()
+                    elif split[0] == CONFIG["prefix"]+"ping":
+                        asuser.sendFromUserToRoom(CONFIG["mailkill_bot"], event["room_id"], CONFIG["access_token"],
+                        content={
+                            "body": f"Pong! {event['user_id']}",
+                            "msgtype": "m.notice"
+                        })
                     elif split[0] == CONFIG["prefix"]+"help":
                         asuser.sendFromUserToRoom(CONFIG["mailkill_bot"], event["room_id"], CONFIG["access_token"],
                         content={

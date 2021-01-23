@@ -8,6 +8,7 @@ import src.config
 import datetime
 from signal import signal, SIGTERM
 import src.modules.google_voice as GoogleVoice
+from src import config
 
 CONTINUE: bool = True
 
@@ -44,7 +45,7 @@ def listen():
             mail_id = mail_ids[inbox.index(mailParser)]
             client.store(mail_id,"+FLAGS", '\Seen')
         for email in inbox:
-            if email.from_[0][1].endswith("@txt.voice.google.com") and globals()["ARGS"].google_voice == True:
+            if email.from_[0][1].endswith("@txt.voice.google.com") and config.ARGS.google_voice == True:
                 GoogleVoice.on_email(email, markAsRead=markAsRead)
     while CONTINUE:
         loop = asyncio.get_event_loop()

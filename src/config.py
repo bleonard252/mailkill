@@ -24,3 +24,5 @@ def init(args: Namespace):
     if not os.path.exists(CONFIG["database"]):
         os.system("echo {} > "+CONFIG['database'])
     DATABASE = TinyDB(CONFIG["database"])
+    global ARGS
+    ARGS = args

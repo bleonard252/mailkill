@@ -111,6 +111,7 @@ def on_receive_events(transaction):
                             f"""{CONFIG["prefix"]}help : Show this help message\n"""
                             f"""{CONFIG["prefix"]}nickname : Set the nickname of the email target\n"""
                             f"""{CONFIG["prefix"]}avatar : Set the avatar of the email target (requires MXC URL)\n"""
+                            f"""{CONFIG["prefix"]}ping : Check if Mailkill is online, or gauge the relay speed\n"""
                             """\n---""",
                             "msgtype": "m.notice"
                         })

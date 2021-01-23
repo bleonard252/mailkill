@@ -1,0 +1,19 @@
+{
+    "__0": "Remove lines where the keys start with __, like this one. Change all the capital-valued fields.",
+    "homeserver": "WHATEVER THE SERVER PART OF THE MXID IS",
+    "homeserver_url": "THE URL (EXCLUDING http:// FOR NOW) TO ACCESS THE HOMESERVER WITH",
+    "__3": "Search 'password 48' on DuckDuckGo and fill that value here",
+    "service_token": "A RANDOM STRING, MATCH IT WITH hs_token IN REGISTRATION FILE",
+    "access_token": "A RANDOM STRING, MATCH IT WITH as_token IN REGISTRATION FILE",
+    "port": 48986,
+    "__1": "Feel free to change the port, but make it match in registration file and if applicable, Docker command",
+    "database": "WHERE THE DATABASE FILE WILL BE STORED",
+    "imap_server": "imap.gmail.com",
+    "smtp_server": "smtp.gmail.com",
+    "imap_username": "YOUR EMAIL ADDRESS OR THE FIRST PART",
+    "imap_password": "YOUR ACCOUNT PASSWORD OR AN APP PASSWORD",
+    "end_user": "YOUR MATRIX ID, USED TO INVITE YOU TO ROOMS",
+    "mailkill_bot": "@mailkillbot:HOMESERVERASABOVE",
+    "__2": "Change the prefix as you see fit",
+    "prefix": "@@"
+}

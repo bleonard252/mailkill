@@ -4,7 +4,7 @@ from main import CONFIG, DB
 import requests
 from . import requesthelper
 
-def register_user(localpart: str, correspondsTo: str):
+def register_user(localpart: str, correspondsTo: str, name: str = None):
     """
     Create a Matrix user.
     """
@@ -12,11 +12,13 @@ def register_user(localpart: str, correspondsTo: str):
         json.dumps({"type": "m.login.application_service", "username": localpart}),
         timeout=10, auth=requesthelper.BearerAuth(CONFIG["access_token"])
     )
-    nickresp = requests.post(f"http://{CONFIG['homeserver_url']}/_matrix/client/r0/profile/@{localpart}:{CONFIG['homeserver']}/displayname", 
-        json.dumps({"displayname": correspondsTo}),
-        timeout=10, auth=requesthelper.BearerAuth(CONFIG["access_token"])
+    nick = correspondsTo
+    if name is not None:
+        nick = name
+    nickresp = requests.put(f"http://{CONFIG['homeserver_url']}/_matrix/client/r0/profile/@{localpart}:{CONFIG['homeserver']}/displayname", 
+        json.dumps({"displayname": nick}),
+        timeout=10, auth=requesthelper.BearerAuth(resp.json()["access_token"])
     )
-    #print(resp.json()) # DEBUG
     resp.raise_for_status()
     nickresp.raise_for_status()
     DB.table("users").insert({
@@ -31,12 +33,14 @@ def register_room(localpart: str, correspondsTo: str, **kwargs):
     You can set name="", is_direct=true, and other
     keys listed in the Matrix room creation API.
     """
+    if not kwargs.__contains__("name"):
+       kwargs["name"] = correspondsTo
     resp = requests.post(f"http://{CONFIG['homeserver_url']}/_matrix/client/r0/createRoom", 
         json.dumps({"room_alias_name": localpart, "creation_content": {"io.github.bleonard252.mailkill.email": correspondsTo}, "preset": "private_chat", **kwargs}),
         timeout=10, auth=requesthelper.BearerAuth(CONFIG["access_token"])
     )
     invresp = requests.post(f"http://{CONFIG['homeserver_url']}/_matrix/client/r0/rooms/{resp.json()['room_id']}/invite", 
-        json.dumps({"user_id": CONFIG['end_user'], **kwargs}),
+        json.dumps({"user_id": CONFIG['end_user']}),
         timeout=10, auth=requesthelper.BearerAuth(CONFIG["access_token"])
     )
     resp.raise_for_status()

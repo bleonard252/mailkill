@@ -29,13 +29,13 @@ From: {addrregex.group('othernum')}\n
     roomname = "mailkill_google-voice_"+addrregex.group('othernum')
     # Interact with the database, prepare user, room
     if not config.DATABASE.table("users").contains(where("email") == fromAddr):
-        register_user(email_to_localpart(fromAddr), fromAddr)
+        register_user(email_to_localpart(fromAddr), fromAddr, name="+"+addrregex.group('othernum'))
     usertoken = config.DATABASE.table("users").get(where("email") == fromAddr).get("token")
     if not config.DATABASE.table("rooms").contains(where("email") == fromAddr):
-        register_room(roomname, fromAddr)
+        register_room(roomname, fromAddr, name="+"+addrregex.group('othernum')+" (SMS)")
         roomid = config.DATABASE.table("rooms").get(where("email") == fromAddr).get("id")
         invresp = requests.post(f"http://{config.CONFIG['homeserver_url']}/_matrix/client/r0/rooms/{roomid}/invite",
-            json={"user_id": f"@{email_to_localpart(fromAddr)}"},
+            json={"user_id": f"@{email_to_localpart(fromAddr)}:{config.CONFIG['homeserver']}"},
             timeout=10, auth=requesthelper.BearerAuth(config.CONFIG["access_token"])
         )
         joinresp = requests.post(f"http://{config.CONFIG['homeserver_url']}/_matrix/client/r0/join/{roomid}",

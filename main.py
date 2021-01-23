@@ -40,7 +40,7 @@ DB = config.DATABASE
 # =================
 # == USE MODULES ==
 # =================
-if args.google_voice:
+if args.google_voice == True:
     print("Using Google Voice")
 
 # =========================

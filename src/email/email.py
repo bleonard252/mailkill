@@ -44,10 +44,7 @@ def listen():
             mail_id = mail_ids[inbox.index(mailParser)]
             client.store(mail_id,"+FLAGS", '\Seen')
         for email in inbox:
-            # print("Got an email!")
-            # print(email)
-            # TODO: do something with the email
-            if email.from_[0][1].endswith("@txt.voice.google.com"):
+            if email.from_[0][1].endswith("@txt.voice.google.com") and globals()["ARGS"].google_voice == True:
                 GoogleVoice.on_email(email, markAsRead=markAsRead)
     while CONTINUE:
         loop = asyncio.get_event_loop()

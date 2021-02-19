@@ -57,7 +57,7 @@ if __name__ == "__main__":
     SERVER.start()
     print(f"Web server started on port {CONFIG['port']}")
     email.listen()
-def _sigterm(_1, _2):
+def _sigterm(_1=None, _2=None):
     print("Terminating Mailkill gracefully...")
     globals()["CONTINUE"] = False
     SERVER.terminate()

@@ -20,7 +20,7 @@ def on_email(email: MailParser, **kwargs):
     if kwargs.__contains__("markAsRead"):
         markAsRead = kwargs["markAsRead"]
     #print(email.body)
-    smsregex = re.match(r'^<https://voice\.google\.com>[\r\n]+(?P<sms>.*?)[\r\n]+To respond to this text message, ', email.body, re.DOTALL)
+    smsregex = re.match(r'^<https://voice\.google\.com>[\r\n]+(?P<sms>.*?)[\r\n]+(?:YOUR ACCOUNT|To respond to this text message, )', email.body, re.DOTALL)
     addrregex = re.match(r'^(?P<mynum>\d+?)\.(?P<othernum>\d+?)\.(?P<random>.*?)\@txt.voice.google.com$', fromAddr)
     smscontent = ""
     if (smsregex is not None): smscontent = smsregex.group('sms')

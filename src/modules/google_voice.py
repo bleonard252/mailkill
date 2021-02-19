@@ -63,7 +63,6 @@ From: {addrregex.group('othernum')}\n
     #             )
     #             resp.raise_for_status()
     # TODO: re-add attachments. https://github.com/SpamScope/mail-parser/issues/70 is required for this to work
-    if smscontent != "MMS Received" and smscontent != "":
-        sendFromUserToRoom(f"@{email_to_localpart(fromAddr)}:{config.CONFIG['homeserver']}", roomid, usertoken, content={"body": smscontent, "msgtype": "m.text"})
+    sendFromUserToRoom(f"@{email_to_localpart(fromAddr)}:{config.CONFIG['homeserver']}", roomid, usertoken, content={"body": smscontent, "msgtype": "m.text"})
     # Finally, mark as read (to prevent parsing it again)
     markAsRead(email)

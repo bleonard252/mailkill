@@ -51,7 +51,7 @@ def listen():
         loop = asyncio.get_event_loop()
         loop.run_until_complete(inner())
         loop.run_until_complete(asyncio.sleep(5))
-def _sigterm():
+def _sigterm(_1, _2):
     CONTINUE = False
 signal(SIGTERM, _sigterm)
 

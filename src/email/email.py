@@ -30,8 +30,8 @@ def listen():
         inbox = []
         if len(mail_ids) == 0: return
         for mail_id in mail_ids:
-            result, data = client.fetch(mail_id, "(RFC822)")
-            client.store(mail_id,"-FLAGS", '\Seen')
+            result, data = client.fetch(mail_id, "BODY.PEEK[]")
+            #client.store(mail_id,"-FLAGS", '\Seen')
             inbox.append(mailparser.parse_from_bytes(data[0][1]))
         latest_email = inbox[-1]
         if DB.table("client").get(where("latest_message_date").exists()) == None:

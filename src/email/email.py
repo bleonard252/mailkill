@@ -16,10 +16,10 @@ def listen():
     CONFIG = src.config.CONFIG
     DB = src.config.DATABASE
     # some of the code below shamelessly stolen from the Internet
-    client = imaplib.IMAP4_SSL(CONFIG["imap_server"])
-    client.login(CONFIG["imap_username"], CONFIG["imap_password"])
-    client.select('inbox')
     async def inner():
+        client = imaplib.IMAP4_SSL(CONFIG["imap_server"])
+        client.login(CONFIG["imap_username"], CONFIG["imap_password"])
+        client.select('inbox')
         if CONFIG["imap_server"] == "imap.gmail.com":
             status, data = client.search(None, 'X-GM-RAW "in:unread"') # get all messages
         else:
